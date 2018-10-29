@@ -156,7 +156,7 @@ export class Account {
     );
 
     const account = new Account();
-    account.address = new Address(obj.address);
+    account.address = Address.fromBase58(obj.address);
     account.label = obj.label;
     account.lock = obj.lock;
     account.isDefault = obj.isDefault;
