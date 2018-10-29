@@ -17,14 +17,14 @@
  */
 
 import { toSeedHex, validateMnemonic } from 'bip39-lite';
-import { randomBytes, ScryptOptions } from 'crypto';
+import { randomBytes } from 'crypto';
 import { HDKey } from 'hdkey-secp256r1';
 import { Address } from '../crypto/address';
 import { KeyParameters } from '../crypto/key';
 import { KeyType } from '../crypto/keyType';
 import { PrivateKey } from '../crypto/privateKey';
 import { PublicKey } from '../crypto/publicKey';
-import { decryptWithGcm, encryptWithGcm } from './scrypt';
+import { decryptWithGcm, encryptWithGcm, ScryptOptionsEx } from './scrypt';
 
 // tslint:disable:quotemark
 // tslint:disable:object-literal-key-quotes
@@ -49,11 +49,11 @@ export class Account {
     password: string,
     address: string,
     saltBase64: string,
-    params: ScryptOptions
+    scrypt: ScryptOptionsEx
   ): Account {
     const account = new Account();
     const salt = Buffer.from(saltBase64, 'base64');
-    const sk = decryptWithGcm(encryptedKey, address, salt, password, 64, params);
+    const sk = decryptWithGcm(encryptedKey, address, salt, password, scrypt);
 
     if (!label) {
       label = randomBytes(4).toString('hex');
@@ -62,6 +62,7 @@ export class Account {
     account.lock = false;
     account.isDefault = false;
     account.salt = saltBase64;
+    account.scrypt = scrypt;
 
     account.encryptedKey = encryptedKey;
 
@@ -84,7 +85,7 @@ export class Account {
    * @param password user's password to encrypt the private key
    * @param params Params used to encrypt the private key.
    */
-  static importWithMnemonic(label: string, mnemonic: string, password: string, params: ScryptOptions): Account {
+  static importWithMnemonic(label: string, mnemonic: string, password: string, scrypt: ScryptOptionsEx): Account {
     mnemonic = mnemonic.trim();
     if (!validateMnemonic(mnemonic)) {
       throw new Error('Invalid mnemonics');
@@ -94,7 +95,7 @@ export class Account {
     const pri = hdkey.derive(ONT_BIP44_PATH);
     const key = Buffer.from(pri.privateKey!).toString('hex');
     const privateKey = new PrivateKey(key);
-    const account = Account.create(label, privateKey, password, params);
+    const account = Account.create(label, privateKey, password, scrypt);
     return account;
   }
 
@@ -108,7 +109,7 @@ export class Account {
    * @param label Custom label
    * @param params Optional scrypt params
    */
-  static create(label: string, privateKey: PrivateKey, password: string, params: ScryptOptions): Account {
+  static create(label: string, privateKey: PrivateKey, password: string, scrypt: ScryptOptionsEx): Account {
     const account = new Account();
     const salt = randomBytes(16);
     const publicKey = privateKey.getPublicKey();
@@ -119,8 +120,9 @@ export class Account {
     account.isDefault = false;
     account.publicKey = publicKey;
     account.address = address;
-    account.encryptedKey = encryptWithGcm(privateKey.key, address.toBase58(), salt, password, 64, params);
+    account.encryptedKey = encryptWithGcm(privateKey.key, address.toBase58(), salt, password, scrypt);
     account.salt = salt.toString('base64');
+    account.scrypt = scrypt;
 
     return account;
   }
@@ -132,7 +134,7 @@ export class Account {
    *
    * @param obj JSON object or string
    */
-  static deserializeJson(obj: any): Account {
+  static deserializeJson(obj: any, scrypt: ScryptOptionsEx): Account {
     if (typeof obj === 'string') {
       obj = JSON.parse(obj);
     }
@@ -153,6 +155,7 @@ export class Account {
     account.salt = obj.salt;
     account.encryptedKey = obj.key;
     account.extra = obj.extra;
+    account.scrypt = scrypt;
     return account;
   }
 
@@ -169,6 +172,8 @@ export class Account {
 
   publicKey: PublicKey;
   isDefault: boolean;
+
+  scrypt: ScryptOptionsEx;
 
   /**
    * Serializes to JSON object.
@@ -196,5 +201,11 @@ export class Account {
     } else {
       return obj;
     }
+  }
+
+  decryptKey(password: string): PrivateKey | Promise<PrivateKey> {
+    const salt = Buffer.from(this.salt, 'base64');
+    const sk = decryptWithGcm(this.encryptedKey, this.address.toBase58(), salt, password, this.scrypt);
+    return new PrivateKey(sk, this.publicKey.algorithm, this.publicKey.parameters);
   }
 }

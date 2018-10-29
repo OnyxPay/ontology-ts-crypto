@@ -1,6 +1,5 @@
-import { ScryptOptions } from 'crypto';
 import { Account } from './account';
-import { DEFAULT_SCRYPT, DEFAULT_SCRYPT_KEYLENGTH } from './scrypt';
+import { DEFAULT_SCRYPT, DEFAULT_SCRYPT_KEYLENGTH, ScryptOptionsEx } from './scrypt';
 
 export class Wallet {
   static create() {
@@ -30,12 +29,12 @@ export class Wallet {
     wallet.scrypt = {
       N: obj.scrypt.n,
       r: obj.scrypt.r,
-      p: obj.scrypt.p
+      p: obj.scrypt.p,
+      keyLength: obj.scrypt.dkLen
     };
-    wallet.keyLength = obj.scrypt.dkLen;
 
     // wallet.identities = obj.identities && (obj.identities as any[]).map((i) => Identity.deserializeJson(i));
-    wallet.accounts = obj.accounts && (obj.accounts as any[]).map((a) => Account.deserializeJson(a));
+    wallet.accounts = obj.accounts && (obj.accounts as any[]).map((a) => Account.deserializeJson(a, wallet.scrypt));
     wallet.extra = obj.extra;
     return wallet;
   }
@@ -45,7 +44,7 @@ export class Wallet {
   defaultAccountAddress: string;
   createTime: string;
   version: string;
-  scrypt: ScryptOptions;
+  scrypt: ScryptOptionsEx;
   keyLength: number;
   // identities: Identity[] = [];
   accounts: Account[] = [];

@@ -1,9 +1,14 @@
 import { createCipheriv, createDecipheriv, ScryptOptions, scryptSync } from 'crypto';
 
-export const DEFAULT_SCRYPT: ScryptOptions = {
+export interface ScryptOptionsEx extends ScryptOptions {
+  keyLength: number;
+}
+
+export const DEFAULT_SCRYPT: ScryptOptionsEx = {
   N: 4096,
   r: 8,
-  p: 8
+  p: 8,
+  keyLength: 64
 };
 
 export const DEFAULT_SCRYPT_KEYLENGTH = 64;
@@ -13,13 +18,14 @@ export function decryptWithGcm(
   address: string,
   salt: Buffer,
   keyphrase: string,
-  keyLength: number,
-  scryptParams: ScryptOptions
+  scryptParams: ScryptOptionsEx
 ) {
+  const { keyLength, ...scryptOptions } = scryptParams;
+
   const result = Buffer.from(encrypted, 'base64');
   const ciphertext = result.slice(0, result.length - 16);
   const authTag = result.slice(result.length - 16);
-  const derived = scryptSync(keyphrase.normalize('NFC'), salt, keyLength, scryptParams);
+  const derived = scryptSync(keyphrase.normalize('NFC'), salt, keyLength, scryptOptions);
   const derived1 = derived.slice(0, 12);
   const derived2 = derived.slice(32);
   const key = derived2;
@@ -53,10 +59,11 @@ export function encryptWithGcm(
   address: string,
   salt: Buffer,
   keyphrase: string,
-  keyLength: number,
-  scryptParams: ScryptOptions
+  scryptParams: ScryptOptionsEx
 ) {
-  const derived = scryptSync(keyphrase.normalize('NFC'), salt, keyLength, scryptParams);
+  const { keyLength, ...scryptOptions } = scryptParams;
+
+  const derived = scryptSync(keyphrase.normalize('NFC'), salt, keyLength, scryptOptions);
   const derived1 = derived.slice(0, 12);
   const derived2 = derived.slice(32);
   const key = derived2;
