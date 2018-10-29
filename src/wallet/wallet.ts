@@ -59,6 +59,10 @@ export class Wallet {
     this.accounts.push(account);
   }
 
+  delAccount(address: string) {
+    this.accounts = this.accounts.filter((account) => account.address.toBase58() !== address);
+  }
+
   setDefaultAccount(address: string): void {
     this.defaultAccountAddress = address;
   }
