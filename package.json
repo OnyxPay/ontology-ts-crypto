@@ -1,0 +1,72 @@
+{
+  "name": "ontology-ts-crypto",
+  "version": "0.1.1",
+  "description": "Cryptography library for Ontology",
+  "main": "./lib/index.js",
+  "types": "./lib/types/index.d.ts",
+  "scripts": {
+    "test": "jest",
+    "lint": "tslint --project ./",
+    "build:dev": "cross-env NODE_ENV=development webpack --mode development --display-error-details --progress --color",
+    "build:prod": "cross-env NODE_ENV=production webpack --mode production --progress --color"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "transform": {
+      "\\.(ts|tsx)$": "ts-jest"
+    },
+    "testEnvironment": "node",
+    "testRegex": "/test/.*\\.test\\.(ts|tsx|js)$"
+  },
+  "author": "Matus Zamborsky <zamborsky@gmail.com>",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/OntologyCommunityDevelopers/ontology-ts-crypto"
+  },
+  "bugs": {
+    "url": "https://github.com/OntologyCommunityDevelopers/ontology-ts-crypto/issues"
+  },
+  "homepage": "https://github.com/OntologyCommunityDevelopers/ontology-ts-crypto",
+  "devDependencies": {
+    "@types/bs58": "^3.0.30",
+    "@types/jest": "^23.3.1",
+    "@types/node": "^10.0.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-3": "^6.24.1",
+    "clean-webpack-plugin": "^0.1.19",
+    "cross-env": "^5.2.0",
+    "jest": "^23.4.2",
+    "jest-cli": "^23.6.0",
+    "npm-run-all": "^4.1.3",
+    "ts-jest": "^23.1.4",
+    "ts-loader": "^4.3.0",
+    "tslint": "^5.10.0",
+    "tslint-eslint-rules": "^5.3.1",
+    "tslint-no-circular-imports": "^0.4.0",
+    "typescript": "^3.0.3",
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.1",
+    "webpack-node-externals": "^1.7.2"
+  },
+  "dependencies": {
+    "@types/bytebuffer": "~5",
+    "@types/elliptic": "^6.4.0",
+    "@types/long": "~4",
+    "big-integer": "^1.6.36",
+    "bip39-lite": "^1.0.3",
+    "bs58": "^4.0.1",
+    "bytebuffer": "~5",
+    "elliptic": "^6.4.1",
+    "hdkey-secp256r1": "^1.1.0",
+    "js-sha3": "^0.8.0",
+    "long": "~4"
+  }
+}
