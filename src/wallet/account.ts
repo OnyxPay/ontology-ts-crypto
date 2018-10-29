@@ -24,7 +24,7 @@ import { KeyParameters } from '../crypto/key';
 import { KeyType } from '../crypto/keyType';
 import { PrivateKey } from '../crypto/privateKey';
 import { PublicKey } from '../crypto/publicKey';
-import { decryptWithGcm, encryptWithGcm, ScryptOptionsEx } from './scrypt';
+import { decryptWithGcm, DEFAULT_SCRYPT, encryptWithGcm, ScryptOptionsEx } from './scrypt';
 
 // tslint:disable:quotemark
 // tslint:disable:object-literal-key-quotes
@@ -49,7 +49,7 @@ export class Account {
     password: string,
     address: string,
     saltBase64: string,
-    scrypt: ScryptOptionsEx
+    scrypt: ScryptOptionsEx = DEFAULT_SCRYPT
   ): Account {
     const account = new Account();
     const salt = Buffer.from(saltBase64, 'base64');
@@ -85,7 +85,12 @@ export class Account {
    * @param password user's password to encrypt the private key
    * @param params Params used to encrypt the private key.
    */
-  static importWithMnemonic(label: string, mnemonic: string, password: string, scrypt: ScryptOptionsEx): Account {
+  static importWithMnemonic(
+    label: string,
+    mnemonic: string,
+    password: string,
+    scrypt: ScryptOptionsEx = DEFAULT_SCRYPT
+  ): Account {
     mnemonic = mnemonic.trim();
     if (!validateMnemonic(mnemonic)) {
       throw new Error('Invalid mnemonics');
@@ -109,7 +114,12 @@ export class Account {
    * @param label Custom label
    * @param params Optional scrypt params
    */
-  static create(label: string, privateKey: PrivateKey, password: string, scrypt: ScryptOptionsEx): Account {
+  static create(
+    label: string,
+    privateKey: PrivateKey,
+    password: string,
+    scrypt: ScryptOptionsEx = DEFAULT_SCRYPT
+  ): Account {
     const account = new Account();
     const salt = randomBytes(16);
     const publicKey = privateKey.getPublicKey();
@@ -134,7 +144,7 @@ export class Account {
    *
    * @param obj JSON object or string
    */
-  static deserializeJson(obj: any, scrypt: ScryptOptionsEx): Account {
+  static deserializeJson(obj: any, scrypt: ScryptOptionsEx = DEFAULT_SCRYPT): Account {
     if (typeof obj === 'string') {
       obj = JSON.parse(obj);
     }
