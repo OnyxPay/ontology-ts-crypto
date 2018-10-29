@@ -6,6 +6,7 @@ export { Signature } from './crypto/signature';
 export { Signable } from './crypto/signable';
 export { SignatureScheme } from './crypto/signatureScheme';
 export { KeyType } from './crypto/keyType';
+export { Address } from './crypto/address';
 export { Account } from './wallet/account';
 export { Wallet } from './wallet/wallet';
 export { ProgramBuilder, programFromParams, programFromPubKey } from './utils/program';
