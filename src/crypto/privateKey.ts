@@ -1,3 +1,4 @@
+import { randomBytes } from 'crypto';
 import * as elliptic from 'elliptic';
 import { Reader } from '../utils/reader';
 import { CurveLabel } from './curveLabel';
@@ -9,6 +10,25 @@ import { Signature } from './signature';
 import { SignatureScheme } from './signatureScheme';
 
 export class PrivateKey extends Key {
+  /**
+   * Generates random Private key using supplied Key type and parameters.
+   *
+   * If no Key type or parameters is supplied, default SDK key type with default parameters will be used.
+   *
+   * @param keyType The key type
+   * @param parameters The parameters for the key type
+   */
+  static random(keyType?: KeyType, parameters?: KeyParameters): PrivateKey {
+    if (keyType === undefined) {
+      keyType = KeyType.ECDSA;
+    }
+
+    if (parameters === undefined) {
+      parameters = new KeyParameters(CurveLabel.SECP256R1);
+    }
+
+    return new PrivateKey(randomBytes(32), keyType, parameters);
+  }
   static deserialize(b: Buffer): PrivateKey {
     const r = new Reader(b);
 
