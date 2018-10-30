@@ -45,7 +45,6 @@ export class Account {
     label: string,
     privateKey: PrivateKey,
     password: string,
-    address: Address,
     salt: Buffer = randomBytes(16),
     scrypt: ScryptOptionsEx = DEFAULT_SCRYPT
   ): Account {
@@ -60,12 +59,11 @@ export class Account {
     account.salt = salt.toString('base64');
     account.scrypt = scrypt;
 
-    account.encryptedKey = encryptWithGcm(privateKey.key, address.toBase58(), salt, password, scrypt);
     account.publicKey = privateKey.getPublicKey();
-
     account.address = Address.fromPubKey(account.publicKey);
+    account.encryptedKey = encryptWithGcm(privateKey.key, account.address.toBase58(), salt, password, scrypt);
 
-    if (!account.address.equals(address)) {
+    if (!account.address.equals(account.address)) {
       throw new Error('Computed address does not match the provided address.');
     }
 
