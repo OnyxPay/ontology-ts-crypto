@@ -1,7 +1,23 @@
+import { Address } from '../crypto/address';
 import { Account } from './account';
 import { DEFAULT_SCRYPT, DEFAULT_SCRYPT_KEYLENGTH, ScryptOptionsEx } from './scrypt';
 
 export class Wallet {
+  static constructAddress(address: string | Address) {
+    let addr: Address;
+
+    if (typeof address === 'string') {
+      if (address.length === 40) {
+        addr = new Address(address);
+      } else {
+        addr = Address.fromBase58(address);
+      }
+    } else {
+      addr = address;
+    }
+
+    return addr;
+  }
   static create() {
     const wallet = new Wallet();
     wallet.name = name;
@@ -59,8 +75,16 @@ export class Wallet {
     this.accounts.push(account);
   }
 
-  delAccount(address: string) {
-    this.accounts = this.accounts.filter((account) => account.address.toBase58() !== address);
+  delAccount(address: string | Address) {
+    const addr = Wallet.constructAddress(address);
+
+    this.accounts = this.accounts.filter((account) => !account.address.equals(addr));
+  }
+
+  getAccount(address: string | Address) {
+    const addr = Wallet.constructAddress(address);
+
+    return this.accounts.find((account) => account.address.equals(addr));
   }
 
   setDefaultAccount(address: string): void {
