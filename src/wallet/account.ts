@@ -41,19 +41,15 @@ export class Account {
    * @param saltBase64 Salt to decrypt
    * @param params Params used to decrypt
    */
-  static importAccount(
+  static import(
     label: string,
-    encryptedKey: string,
-    keyType: KeyType,
-    keyParameters: KeyParameters,
+    privateKey: PrivateKey,
     password: string,
-    address: string,
-    saltBase64: string,
+    address: Address,
+    salt: Buffer = randomBytes(16),
     scrypt: ScryptOptionsEx = DEFAULT_SCRYPT
   ): Account {
     const account = new Account();
-    const salt = Buffer.from(saltBase64, 'base64');
-    const sk = decryptWithGcm(encryptedKey, address, salt, password, scrypt);
 
     if (!label) {
       label = randomBytes(4).toString('hex');
@@ -61,17 +57,15 @@ export class Account {
     account.label = label;
     account.lock = false;
     account.isDefault = false;
-    account.salt = saltBase64;
+    account.salt = salt.toString('base64');
     account.scrypt = scrypt;
 
-    account.encryptedKey = encryptedKey;
-
-    const privateKey = new PrivateKey(sk, keyType, keyParameters);
+    account.encryptedKey = encryptWithGcm(privateKey.key, address.toBase58(), salt, password, scrypt);
     account.publicKey = privateKey.getPublicKey();
 
     account.address = Address.fromPubKey(account.publicKey);
 
-    if (!account.address.equals(new Address(address))) {
+    if (!account.address.equals(address)) {
       throw new Error('Computed address does not match the provided address.');
     }
 
@@ -85,7 +79,7 @@ export class Account {
    * @param password user's password to encrypt the private key
    * @param params Params used to encrypt the private key.
    */
-  static importWithMnemonic(
+  static importMnemonic(
     label: string,
     mnemonic: string,
     password: string,
