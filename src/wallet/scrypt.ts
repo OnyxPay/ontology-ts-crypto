@@ -1,4 +1,5 @@
-import { createCipheriv, createDecipheriv, ScryptOptions, scryptSync } from 'crypto';
+import { createCipheriv, createDecipheriv, ScryptOptions } from 'crypto';
+import * as asyncScrypt from 'scrypt-async';
 
 export interface ScryptOptionsEx extends ScryptOptions {
   keyLength: number;
@@ -79,4 +80,31 @@ export function encryptWithGcm(
 
   const result = Buffer.concat([ciphertext, authTag]);
   return result.toString('base64');
+}
+
+/**
+ * Synchronious call to scrypt-async-js.
+ *
+ * @param keyphrase Keyphrase to use
+ * @param addressHash Hex encoded address
+ * @param params Scrypt params
+ */
+function scryptSync(keyphrase: string, salt: Buffer, keyLength: number, params: ScryptOptions) {
+  let derived: number[] = [];
+
+  const s = Array.from(salt.subarray(0));
+  asyncScrypt(
+    keyphrase.normalize('NFC'),
+    s,
+    {
+      N: params.N,
+      r: params.r!,
+      p: params.p!,
+      dkLen: keyLength
+    },
+    (result: string | number[]) => {
+      derived = result as number[];
+    }
+  );
+  return new Buffer(derived);
 }
