@@ -22,6 +22,8 @@ export class Wallet {
   static create() {
     const wallet = new Wallet();
     wallet.name = name;
+    wallet.accounts = [];
+    wallet.identities = [];
 
     // createtime
     wallet.createTime = new Date().toISOString();
@@ -51,8 +53,11 @@ export class Wallet {
     };
 
     wallet.identities =
-      obj.identities && (obj.identities as any[]).map((i) => Identity.deserializeJson(i, wallet.scrypt));
-    wallet.accounts = obj.accounts && (obj.accounts as any[]).map((a) => Account.deserializeJson(a, wallet.scrypt));
+      obj.identities !== undefined
+        ? (obj.identities as any[]).map((i) => Identity.deserializeJson(i, wallet.scrypt))
+        : [];
+    wallet.accounts =
+      obj.accounts !== undefined ? (obj.accounts as any[]).map((a) => Account.deserializeJson(a, wallet.scrypt)) : [];
     wallet.extra = obj.extra;
     return wallet;
   }
@@ -64,8 +69,8 @@ export class Wallet {
   version: string;
   scrypt: ScryptOptionsEx;
   keyLength: number;
-  identities: Identity[] = [];
-  accounts: Account[] = [];
+  identities: Identity[];
+  accounts: Account[];
   extra: null;
 
   addAccount(account: Account) {
