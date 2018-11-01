@@ -68,7 +68,7 @@ export class Wallet {
   accounts: Account[] = [];
   extra: null;
 
-  addAccount(account: Account): void {
+  addAccount(account: Account) {
     for (const ac of this.accounts) {
       if (ac.address.equals(account.address)) {
         return;
@@ -87,6 +87,23 @@ export class Wallet {
     const addr = Wallet.constructAddress(address);
 
     return this.accounts.find((account) => account.address.equals(addr));
+  }
+
+  addIdentity(identity: Identity) {
+    for (const i of this.identities) {
+      if (i.ontid === identity.ontid) {
+        return;
+      }
+    }
+    this.identities.push(identity);
+  }
+
+  delIdentity(ontid: string) {
+    this.identities = this.identities.filter((identity) => !(identity.ontid === ontid));
+  }
+
+  getIdentity(ontid: string) {
+    return this.identities.find((identity) => identity.ontid === ontid);
   }
 
   setDefaultAccount(address: string): void {
