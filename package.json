@@ -1,6 +1,6 @@
 {
   "name": "ontology-ts-crypto",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "Cryptography library for Ontology",
   "main": "./lib/index.js",
   "types": "./lib/types/index.d.ts",

@@ -74,4 +74,8 @@ export class Address {
 
     return base58.encode(datas);
   }
+
+  toOntId() {
+    return 'did:ont:' + this.toBase58();
+  }
 }

@@ -47,7 +47,7 @@ export class Account {
     password: string,
     salt: Buffer = randomBytes(16),
     scrypt: ScryptOptionsEx = DEFAULT_SCRYPT
-  ): Account {
+  ) {
     const account = new Account();
 
     if (!label) {
@@ -77,12 +77,7 @@ export class Account {
    * @param password user's password to encrypt the private key
    * @param params Params used to encrypt the private key.
    */
-  static importMnemonic(
-    label: string,
-    mnemonic: string,
-    password: string,
-    scrypt: ScryptOptionsEx = DEFAULT_SCRYPT
-  ): Account {
+  static importMnemonic(label: string, mnemonic: string, password: string, scrypt: ScryptOptionsEx = DEFAULT_SCRYPT) {
     mnemonic = mnemonic.trim();
     if (!validateMnemonic(mnemonic)) {
       throw new Error('Invalid mnemonics');
@@ -106,12 +101,7 @@ export class Account {
    * @param label Custom label
    * @param params Optional scrypt params
    */
-  static create(
-    label: string,
-    privateKey: PrivateKey,
-    password: string,
-    scrypt: ScryptOptionsEx = DEFAULT_SCRYPT
-  ): Account {
+  static create(label: string, privateKey: PrivateKey, password: string, scrypt: ScryptOptionsEx = DEFAULT_SCRYPT) {
     const account = new Account();
     const salt = randomBytes(16);
     const publicKey = privateKey.getPublicKey();
@@ -188,6 +178,7 @@ export class Account {
       address: this.address.toBase58(),
       label: this.label,
       lock: this.lock,
+      extra: this.extra,
       key: this.encryptedKey,
       'enc-alg': this['enc-alg'],
       hash: this.hash,
