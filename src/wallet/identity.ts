@@ -79,6 +79,8 @@ export class Identity {
     identity.ontid = Address.fromPubKey(publicKey).toOntId();
     identity.controls = [controlData];
     identity.scrypt = scrypt;
+
+    return identity;
   }
 
   /**
@@ -114,6 +116,8 @@ export class Identity {
     identity.ontid = Address.fromPubKey(publicKey).toOntId();
     identity.controls = [controlData];
     identity.scrypt = scrypt;
+
+    return identity;
   }
 
   static deserializeControlsJson(obj: any[]): ControlData[] {
