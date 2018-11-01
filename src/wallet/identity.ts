@@ -154,10 +154,12 @@ export class Identity {
     const identity = new Identity();
     identity.label = obj.label;
     identity.lock = obj.lock;
+    identity.ontid = obj.ontid;
     identity.isDefault = obj.isDefault;
     identity.extra = obj.extra;
     identity.controls = Identity.deserializeControlsJson(obj.controls);
     identity.scrypt = scrypt;
+
     return identity;
   }
 
