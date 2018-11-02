@@ -131,7 +131,12 @@ export class Wallet {
       defaultAccountAddress: this.defaultAccountAddress,
       createTime: this.createTime,
       version: this.version,
-      scrypt: this.scrypt,
+      scrypt: {
+        n: this.scrypt.N,
+        r: this.scrypt.r,
+        p: this.scrypt.p,
+        dkLen: this.scrypt.keyLength
+      },
       identities: this.identities.map((i) => i.serializeJson(false)),
       accounts: this.accounts.map((a) => a.serializeJson(false)),
       extra: null
