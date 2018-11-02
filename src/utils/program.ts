@@ -53,15 +53,19 @@ export class ProgramBuilder {
     this.w.writeBytes(data);
   }
 
-  pushNum(num: number) {
-    if (num === -1) {
+  pushNum(num: number | Long) {
+    if (typeof num === 'number') {
+      num = Long.fromNumber(num);
+    }
+
+    if (num.eq(-1)) {
       this.writeOpCode(O.PUSHM1);
-    } else if (num === 0) {
+    } else if (num.isZero()) {
       this.writeOpCode(O.PUSH0);
-    } else if (num > 0 && num < 16) {
-      this.writeOpCode(num - 1 + O.PUSH1);
+    } else if (num.gt(0) && num.lt(16)) {
+      this.writeOpCode(num.toNumber() - 1 + O.PUSH1);
     } else {
-      this.pushBytes(bigIntToBytes(bigInt(num)));
+      this.pushBytes(bigIntToBytes(bigInt(num.toString())));
     }
   }
 
