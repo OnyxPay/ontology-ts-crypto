@@ -22,6 +22,9 @@ export interface ControlData {
    * Address of control data
    */
   address: Address;
+
+  'enc-alg': string;
+
   /**
    * Salt of control data
    */
@@ -69,6 +72,7 @@ export class Identity {
       address,
       salt: salt.toString('base64'),
       hash: 'sha256',
+      'enc-alg': 'aes-256-gcm',
       publicKey,
       scrypt
     };
@@ -107,6 +111,7 @@ export class Identity {
       address,
       salt: salt.toString('base64'),
       hash: 'sha256',
+      'enc-alg': 'aes-256-gcm',
       publicKey
     };
 
@@ -134,6 +139,7 @@ export class Identity {
         address: Address.fromBase58(control.address),
         salt: control.salt,
         hash: control.hash,
+        'enc-alg': control['enc-alg'],
         publicKey: pk
       };
     });
