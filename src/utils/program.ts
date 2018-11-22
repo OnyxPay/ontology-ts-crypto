@@ -89,6 +89,10 @@ export function programFromPubKey(key: PublicKey): Buffer {
 }
 
 export function programFromMultiPubKeys(m: number, keys: PublicKey[]): Buffer {
+  if (m === 1) {
+    return programFromPubKey(keys[0]);
+  }
+
   const n = keys.length;
   if (!(1 <= m && m <= n && n <= 1024)) {
     throw new Error('Wrong multi-sig param');
