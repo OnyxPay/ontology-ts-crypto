@@ -88,6 +88,28 @@ export function programFromPubKey(key: PublicKey): Buffer {
   return b.getProgram();
 }
 
+export function programFromMultiPubKeys(m: number, keys: PublicKey[]): Buffer {
+  const n = keys.length;
+  if (!(1 <= m && m <= n && n <= 1024)) {
+    throw new Error('Wrong multi-sig param');
+  }
+
+  keys.sort(PublicKey.compare);
+
+  const b = new ProgramBuilder();
+
+  b.pushNum(m);
+
+  keys.forEach((key) => {
+    b.pushPubKey(key);
+  });
+
+  b.pushNum(n);
+
+  b.writeOpCode(O.CHECKMULTISIG);
+  return b.getProgram();
+}
+
 export function programFromParams(sigs: Buffer[]) {
   const b = new ProgramBuilder();
 

@@ -33,6 +33,30 @@ export class PublicKey extends Key {
     }
   }
 
+  static compare(a: PublicKey, b: PublicKey) {
+    if (a.algorithm !== b.algorithm) {
+      return a.algorithm.hex - b.algorithm.hex;
+    }
+
+    switch (a.algorithm) {
+      case KeyType.ECDSA:
+        const ec = new elliptic.ec(a.parameters.curve.preset);
+        const paKey = ec.keyFromPublic(a.key, 'hex');
+        const pbKey = ec.keyFromPublic(b.key, 'hex');
+        const pa = paKey.getPublic();
+        const pb = pbKey.getPublic();
+        if (pa.getX() !== pb.getX()) {
+          return pa.getX() - pb.getX();
+        } else {
+          return pa.getY() - pb.getY();
+        }
+      case KeyType.EDDSA:
+        return Number(a.key.toString('hex')) - Number(b.key.toString('hex'));
+      default:
+        return 0;
+    }
+  }
+
   serialize(): Buffer {
     const w = new Writer();
 
