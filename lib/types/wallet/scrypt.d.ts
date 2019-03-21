@@ -1,5 +1,10 @@
 /// <reference types="node" />
-import { ScryptOptions } from 'crypto';
+interface ScryptOptions {
+    N?: number;
+    r?: number;
+    p?: number;
+    maxmem?: number;
+}
 export interface ScryptOptionsEx extends ScryptOptions {
     keyLength: number;
 }
